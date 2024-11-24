@@ -2,7 +2,10 @@ module client
 
 go 1.23.0
 
-require github.com/asynkron/protoactor-go v0.0.0-20240822202345-3c0e61ca19c9
+require (
+	github.com/asynkron/protoactor-go v0.0.0-20240822202345-3c0e61ca19c9
+	google.golang.org/protobuf v1.33.0
+)
 
 require (
 	github.com/Workiva/go-datastructures v1.1.3 // indirect
@@ -44,5 +47,4 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/grpc v1.60.1 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
 )
