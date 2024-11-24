@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package proto;
+
+// Add this line - replace with your module path
+option go_package = "github.com/nitingoyal0996/reddit-clone/proto";
+
+message TokenValidationRequest {
+    string token = 1;
+}
+
+// Register messages
+message RegisterRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+// Login messages
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string token = 1;
+    string error = 2;
+}
+
+message RegisterResponse {
+    uint64 id = 1;
+    string username = 2;
+    string error = 3;
+}
+
+message CreateSubredditRequest {
+    string token = 1;
+    string name = 2;
+    string description = 3;
+    uint64 creator_id = 4;
+}
+
+
+message CreateSubredditResponse {
+    string error = 1;
+    uint64 subreddit_id = 2;
+}
+
+message SubscriptionRequest {
+    string token = 1;
+    uint64 user_id = 2;
+    uint64 subreddit_id = 3;
+}
+
+message SubscriptionResponse {
+    bool success = 1;
+    string message = 2;
+}

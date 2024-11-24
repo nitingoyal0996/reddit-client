@@ -28,15 +28,25 @@ func main() {
 	c.StartClient() // Configure as a client
 	defer c.Shutdown(false)
 	
-	// simulators
-	time.Sleep(5 * time.Second)
-	Simulator := NewSimulatorContext(system)
-	
-	// Tests
-	Simulator.RegisterUsers()
-	Simulator.LoginUsers()
+	// simulators - to be run concurrently with go routines
+	time.Sleep(5 * time.Second)	
+	startIdx := 1
+	endIdx := 2
+	go newFunction(system, startIdx, endIdx)
 
 	finish := make(chan os.Signal, 1)
 	signal.Notify(finish, os.Interrupt, os.Kill)
 	<-finish
+}
+
+func newFunction(system *actor.ActorSystem, startIdx int, endIdx int) {
+	Simulator := NewSimulatorContext(system)
+	Simulator.RegisterUsers()
+	// time.Sleep(1 * time.Second)
+	// Simulator.LoginUsers(startIdx, endIdx)
+	// Simulator.CreateSubreddit()
+	time.Sleep(1 * time.Second)
+	// Simulator.SimulateSubscriptions(1000)
+	// time.Sleep(5 * time.Second)
+	fmt.Println("Active Consumers: ", Simulator.GetActiveConsumerCount())
 }

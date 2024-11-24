@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/nitingoyal0996/reddit-clone/proto";
+
+message Login {
+    string username = 1;
+    string password = 2;
+}
+
+message Subreddit {
+    string name = 1;
+    string description = 2;
+}
+
+message Post {
+    string title = 1;
+    string content = 2;
+    string subreddit = 3;
+}
+
+message Join {
+    uint64 subreddit_id = 2;
+}
+
+message Leave {
+    string subreddit_id = 2;
+}
+
+message Logout {}
+
+message Test {
+}
