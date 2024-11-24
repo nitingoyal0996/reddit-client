@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package messages;
+
+option go_package = "github.com/nitingoyal0996/reddit-clone/messages";
+
+message Register {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message Login {
+    string username = 1;
+    string password = 2;
+}
+
+message Reply {
+    string message = 1;
+    uint64 toId = 2;
+}
+
+message Subreddit {
+    string name = 1;
+    string description = 2;
+}
+
+message Post {
+    string title = 1;
+    string content = 2;
+    string subreddit = 3;
+}
+
+message Comment {
+    string content = 1;
+    uint64 postId = 2;
+}
+
+message Logout {
+    string token = 1;
+}
+
+message Join {
+    string subreddit = 2;
+}
+
+message Leave {
+    string subreddit = 2;
+}
+
+message Test {
+}
