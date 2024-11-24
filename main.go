@@ -41,12 +41,13 @@ func main() {
 
 func newFunction(system *actor.ActorSystem, startIdx int, endIdx int) {
 	Simulator := NewSimulatorContext(system)
-	Simulator.RegisterUsers()
+	// Simulator.RegisterUsers(startIdx, endIdx)
 	// time.Sleep(1 * time.Second)
 	// Simulator.LoginUsers(startIdx, endIdx)
-	// Simulator.CreateSubreddit()
-	time.Sleep(1 * time.Second)
-	// Simulator.SimulateSubscriptions(1000)
-	// time.Sleep(5 * time.Second)
-	fmt.Println("Active Consumers: ", Simulator.GetActiveConsumerCount())
+	// time.Sleep(1 * time.Second)
+	// Simulator.CreateOneSubreddit()
+	// time.Sleep(1 * time.Second)
+	// takes number of subreddits and number users.
+	Simulator.GetZipfDistributionForMembers(10, 1000)
+	// fmt.Println("Active Consumers: ", Simulator.GetActiveConsumerCount())
 }
