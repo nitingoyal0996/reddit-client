@@ -127,6 +127,8 @@ func (context *SimulatorContext) AssignMembershipsToUsers() {
 			// create 2 posts - every user who joins a subreddit creates 2 posts
 			context.CreateOnePost(int(subredditID), userIdx)
 			time.Sleep(50 * time.Millisecond)
+			context.CreateOnePost(int(subredditID), userIdx)
+			time.Sleep(50 * time.Millisecond)
 		}
 	}
 }

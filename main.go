@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
@@ -14,6 +15,36 @@ import (
 )
 
 func main() {
+	// read command line arguments
+	if len(os.Args) < 2 || len(os.Args) > 4 {
+		fmt.Println("Usage: ./client <Simulation #?> [userCount] [subredditCount]")
+		os.Exit(1)
+	}
+
+	simulation, err := strconv.Atoi(os.Args[1])
+	if err != nil || (simulation != 1 && simulation != 2 && simulation != 3) {
+		fmt.Println("Usage: ./client <Simulation #?> [userCount] [subredditCount]")
+		os.Exit(1)
+	}
+
+	userCount := 1000
+	if len(os.Args) > 2 {
+		userCount, err = strconv.Atoi(os.Args[2])
+		if err != nil {
+			fmt.Println("Invalid user count. Please provide a valid number.")
+			os.Exit(1)
+		}
+	}
+
+	subredditCount := 10
+	if len(os.Args) > 3 {
+		subredditCount, err = strconv.Atoi(os.Args[3])
+		if err != nil || subredditCount >= userCount {
+			fmt.Println("Invalid subreddit count. Please provide a valid number less than user count.")
+			os.Exit(1)
+		}
+	}
+
 	// Set up actor system
 	system := actor.NewActorSystem()
 
@@ -27,16 +58,27 @@ func main() {
 	// Manage the cluster client's lifecycle
 	c.StartClient() // Configure as a client
 	defer c.Shutdown(false)
-	
-	// time.Sleep(2 * time.Second)	
-	// println("Scenario 1 - Many users")
-	// SimulateUserCreation(system, 1000)
-	// time.Sleep(2 * time.Second)
-	// println("Scenario 2 - Many subreddits with zipf user distribution")
-	// SimulateZipfDistribution(system, 2, 10)
-	time.Sleep(2 * time.Second)
-	println("Scenario 3 - Connection and disconnection")
-	SimulateConnectionAndDisconnection(system, 5 * time.Second, 10)
+
+	switch simulation {
+	case 1:
+		time.Sleep(2 * time.Second)
+		println("Scenario 1 - Many users")
+		SimulateUserCreation(system, userCount)
+	case 2:
+		time.Sleep(2 * time.Second)
+		println("Scenario 2 - Many subreddits with zipf user distribution")
+		SimulateZipfDistribution(system, subredditCount, userCount)
+	case 3:
+		time.Sleep(2 * time.Second)
+		println("Scenario 3 - Connection and disconnection")
+		duration := 5*time.Second
+		SimulateConnectionAndDisconnection(system, duration, userCount)
+	default:
+		fmt.Println("Invalid simulation number. Please use 1, 2, or 3.")
+		os.Exit(1)
+	}
+	println("Simulation completed. Exiting...")
+	os.Exit(0)
 
 	finish := make(chan os.Signal, 1)
 	signal.Notify(finish, os.Interrupt, os.Kill)
