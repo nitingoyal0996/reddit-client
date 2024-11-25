@@ -28,26 +28,49 @@ func main() {
 	c.StartClient() // Configure as a client
 	defer c.Shutdown(false)
 	
-	// simulators - to be run concurrently with go routines
-	time.Sleep(5 * time.Second)	
-	startIdx := 1
-	endIdx := 2
-	go newFunction(system, startIdx, endIdx)
+	// time.Sleep(2 * time.Second)	
+	// println("Scenario 1 - Many users")
+	// SimulateUserCreation(system, 1000)
+	time.Sleep(2 * time.Second)
+	println("Scenario 2 - Many subreddits with zipf user distribution")
+	SimulateZipfDistribution(system, 2, 10)
 
 	finish := make(chan os.Signal, 1)
 	signal.Notify(finish, os.Interrupt, os.Kill)
 	<-finish
 }
 
-func newFunction(system *actor.ActorSystem, startIdx int, endIdx int) {
+// Tests
+// Scenario 1 - Many users
+func SimulateUserCreation(system *actor.ActorSystem, userCount int) {
 	Simulator := NewSimulatorContext(system)
-	// Simulator.RegisterUsers(startIdx, endIdx)
-	// time.Sleep(1 * time.Second)
-	// Simulator.LoginUsers(startIdx, endIdx)
-	// time.Sleep(1 * time.Second)
-	// Simulator.CreateOneSubreddit()
-	// time.Sleep(1 * time.Second)
-	// takes number of subreddits and number users.
-	Simulator.GetZipfDistributionForMembers(10, 1000)
-	// fmt.Println("Active Consumers: ", Simulator.GetActiveConsumerCount())
+	Simulator.RegisterUsers(0, userCount)
+	time.Sleep(1 * time.Second)
+	Simulator.LoginUsers(0, userCount)
 }
+
+// Scenario 2 - Many subreddits with zipf user distribution
+func SimulateZipfDistribution(system *actor.ActorSystem, subCount int, userCount int) {
+	Simulator := NewSimulatorContext(system)
+	Simulator.RegisterUsers(0, userCount)
+	time.Sleep(1 * time.Second)
+	Simulator.LoginUsers(0, userCount)
+	time.Sleep(1 * time.Second)
+	for i := 0; i < subCount; i++ {
+		Simulator.CreateOneSubreddit(i)
+		time.Sleep(50 * time.Millisecond)
+	}
+	Simulator.GetZipfDistributionForMembers(subCount, userCount)
+	time.Sleep(1 * time.Second)
+	Simulator.AssignMembershipsToUsers()
+	time.Sleep(1 * time.Second)
+}
+
+// // Scenario 3 - Connection and disconnection
+// func SimulateConnectionAndDisconnection(system *actor.ActorSystem, userCount int) {
+// 	Simulator := NewSimulatorContext(system)
+// 	Simulator.RegisterUsers(0, userCount)
+// 	// over a period of time, simulate users being connected and disconnected
+
+	
+// }

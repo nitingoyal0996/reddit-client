@@ -12,14 +12,16 @@ import (
 type SimulatorContext struct {
 	system    *actor.ActorSystem
 	consumers map[int]*actor.PID
-	reddit	  *actor.PID
-	redditID  uint64
+	redditIDs []uint64
+	redditMembers map[uint64]int
 }
 
 func NewSimulatorContext(system *actor.ActorSystem) *SimulatorContext {
 	return &SimulatorContext{
 		system:    system,
 		consumers: make(map[int]*actor.PID),
+		redditIDs: []uint64{},
+		redditMembers: make(map[uint64]int),
 	}
 }
 func (context *SimulatorContext) RegisterUsers(startIdx int, endIdx int) {
@@ -38,6 +40,7 @@ func (context *SimulatorContext) RegisterUsers(startIdx int, endIdx int) {
 			Password: password,
 		})
 		context.consumers[i] = consumerActor
+		// stops chocking
 		time.Sleep(100 * time.Millisecond)
 	}
 }
@@ -48,30 +51,31 @@ func (context *SimulatorContext) LoginUsers(startIdx int, endIdx int) {
 			Username: fmt.Sprintf("user_%d", i),
 			Password: fmt.Sprintf("password_%d", i),
 		})
+		// stop chocking
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 
 func (context *SimulatorContext) GetActiveConsumerCount() int {
-    return len(context.consumers)
+	return len(context.consumers)
 }
 
-func (context *SimulatorContext) CreateOneSubreddit() {
-	future:=context.system.Root.RequestFuture(context.consumers[1], &proto.CreateSubredditRequest{
-		Token:       "",
-		Name:        "subreddit_1",
-		Description: "This is a test subreddit",
-		CreatorId:   1,
+func (context *SimulatorContext) CreateOneSubreddit(name int) {
+	future := context.system.Root.RequestFuture(context.consumers[1], &proto.CreateSubredditRequest{
+		Name:        fmt.Sprintf("subreddit_%d", name),
+		Description: fmt.Sprintf("subreddit_%d description", name),
 	}, 5*time.Second)
 	res, err := future.Result()
 	if err != nil {
 		fmt.Println("Error: ", err)
 	} else {
-		context.redditID = res.(*proto.CreateSubredditResponse).SubredditId
+		subredditID := res.(*proto.CreateSubredditResponse).SubredditId
+		context.redditIDs = append(context.redditIDs, subredditID)
 	}
-	println("Subreddit created with ID: ", context.redditID)
+	println("Subreddit created with ID: ", context.redditIDs[len(context.redditIDs)-1])
 }
 
-func (context *SimulatorContext) GetZipfDistributionForMembers(subredditCount int, userCount int) []int {
+func (context *SimulatorContext) GetZipfDistributionForMembers(subredditCount int, userCount int) {
     // Seed the random number generator
 	r := rand.New(rand.NewSource(uint64(time.Now().UnixNano())))
 
@@ -106,7 +110,43 @@ func (context *SimulatorContext) GetZipfDistributionForMembers(subredditCount in
 	// Print results
 	for i, members := range scaledCounts {
 		fmt.Printf("Subreddit %d: %d members\n", i+1, members)
+		context.redditMembers[context.redditIDs[i]] = members
 	}
+}
 
-	return scaledCounts
+func (context *SimulatorContext) AssignMembershipsToUsers() {
+	// loop over the redditMembers map and assign memberships to users
+	for subredditID, memberCount := range context.redditMembers {
+		print("SubredditID: ", subredditID)
+		for i := 0; i < memberCount; i++ {
+			userIdx := i % len(context.consumers)
+			print("UserIdx: ", userIdx)
+			context.system.Root.Send(context.consumers[userIdx], &proto.SubscriptionRequest{
+				SubredditId: subredditID,
+			})
+			// create 2 posts - every user who joins a subreddit creates 2 posts
+			context.CreateOnePost(int(subredditID), userIdx)
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+}
+
+func (context *SimulatorContext) CreateOnePost(subredditId int, consumerIdx int) {
+	consumer := context.consumers[consumerIdx]
+	future := context.system.Root.RequestFuture(consumer, &proto.CreatePostRequest{
+		Title:       fmt.Sprintf("post_%d", consumerIdx),
+		Content:     fmt.Sprintf("post_%d content", consumerIdx),
+		SubredditId: uint64(subredditId),
+	}, 5*time.Second)
+	res, err := future.Result()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	postResponse, ok := res.(*proto.CreatePostResponse)
+	if !ok {
+		fmt.Println("Error: failed to cast response to CreatePostResponse")
+	} else {
+		fmt.Println("Error: ", postResponse.Error)
+	}
+	println("Post created with ID: ", context.redditIDs[len(context.redditIDs)-1])
 }

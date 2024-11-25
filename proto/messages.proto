@@ -56,3 +56,15 @@ message SubscriptionResponse {
     bool success = 1;
     string message = 2;
 }
+
+message CreatePostRequest {
+    string token = 1;
+    string title = 2;
+    string content = 3;
+    uint64 author_id = 4;
+    uint64 subreddit_id = 5;
+}
+
+message CreatePostResponse {
+    string error = 1;
+}

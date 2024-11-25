@@ -34,10 +34,12 @@ func (consumer *ConsumerActor) Receive(context actor.Context) {
 	case *proto.CreateSubredditRequest:
 		fmt.Printf("Create Subreddit")
 		consumer.CreateSubreddit(context, actorMsg)
-	case *proto.Join:
+	case *proto.SubscriptionRequest:
 		fmt.Printf("Join Subreddit")
-	case *proto.Post:
+		consumer.JoinSubreddit(context, actorMsg)
+	case *proto.CreatePostRequest:
 		fmt.Printf("Create Post")
+		consumer.CreatePost(context, actorMsg)
 	default:
 		fmt.Println("Unknown Message: ", consumer.token)
 	}
@@ -76,7 +78,6 @@ func (consumer *ConsumerActor) Login(context actor.Context, actorMsg *proto.Logi
 
 func (consumer *ConsumerActor) CreateSubreddit(context actor.Context, actorMsg *proto.CreateSubredditRequest) {
 	subredditActor := cluster.GetCluster(context.ActorSystem()).Get("subreddit", "Subreddit")
-	fmt.Printf("Consumer Token: %s\n", consumer.token)
 	future := context.RequestFuture(subredditActor, &proto.CreateSubredditRequest{
 		CreatorId:   uint64(consumer.id),
 		Token:       consumer.token,
@@ -101,27 +102,53 @@ func (consumer *ConsumerActor) CreateSubreddit(context actor.Context, actorMsg *
 	}
 }
 
-// func (consumer *ConsumerActor) JoinSubreddit(context actor.Context, actorMsg *proto.Join) {
-// 	subredditActor := cluster.GetCluster(context.ActorSystem()).Get("subreddit", "Subreddit")
-// 	future := context.RequestFuture(subredditActor, &messages.SubscriptionRequest{
-// 		UserId:      uint64(consumer.id),
-// 		Token:       consumer.token,
-// 		SubredditId: actorMsg.SubredditId,
-// 	}, 5*time.Second)
-// 	res, err := future.Result()
-// 	if err != nil {
-// 		fmt.Println("Error: ", err)
-// 	} else {
-// 		joinResponse, ok := res.(*proto.SubscriptionResponse)
-// 		if !ok {
-// 			fmt.Println("Invalid response type")
-// 			return
-// 		}
-// 		if !joinResponse.Success {
-// 			fmt.Println("Error: ", joinResponse.Message)
-// 			return
-// 		}
-// 		fmt.Printf("Subreddit joined with ID: %d\n", actorMsg.SubredditId)
-// 		context.Respond(&messages.SubscriptionResponse{Success: true, Message: ""})
-// 	}
-// }
+func (consumer *ConsumerActor) JoinSubreddit(context actor.Context, actorMsg *proto.SubscriptionRequest) {
+	subredditActor := cluster.GetCluster(context.ActorSystem()).Get("subreddit", "Subreddit")
+	future := context.RequestFuture(subredditActor, &proto.SubscriptionRequest{
+		Token:       consumer.token,
+		UserId:      uint64(consumer.id),
+		SubredditId: actorMsg.SubredditId,
+	}, 5*time.Second)
+	res, err := future.Result()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	} else {
+		joinResponse, ok := res.(*proto.SubscriptionResponse)
+		if !ok {
+			fmt.Println("Invalid response type")
+			return
+		}
+		if !joinResponse.Success {
+			fmt.Println("Error: ", joinResponse.Message)
+			return
+		}
+		fmt.Printf("Subreddit joined with ID: %d\n", actorMsg.SubredditId)
+		context.Respond(&proto.SubscriptionResponse{Success: true, Message: ""})
+	}
+}
+
+func (consumer *ConsumerActor) CreatePost(context actor.Context, actorMsg *proto.CreatePostRequest) {
+	postActor := cluster.GetCluster(context.ActorSystem()).Get("post", "Post")
+	future := context.RequestFuture(postActor, &proto.CreatePostRequest{
+		Token:       consumer.token,
+		AuthorId:      uint64(consumer.id),
+		SubredditId: actorMsg.SubredditId,
+		Title:       actorMsg.Title,
+		Content:     actorMsg.Content,
+	}, 5*time.Second)
+	res, err := future.Result()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	} else {
+		postResponse, ok := res.(*proto.CreatePostResponse)
+		if !ok {
+			fmt.Println("Invalid response type")
+			return
+		}
+		if postResponse.Error != "" {
+			fmt.Println("Error: ", postResponse.Error)
+			return
+		}
+		context.Respond(&proto.CreatePostResponse{Error: ""})
+	}
+}
