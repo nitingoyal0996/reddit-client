@@ -28,9 +28,9 @@ func (consumer *ConsumerActor) Receive(context actor.Context) {
 		fmt.Printf("Login the user")
 		// simulation connection
 		consumer.Login(context, actorMsg)
-	case *proto.Logout:
+	case *proto.LogoutRequest:
 		fmt.Printf("Logout the user")
-		// simulate disconnection
+		consumer.Logout(context, actorMsg)
 	case *proto.CreateSubredditRequest:
 		fmt.Printf("Create Subreddit")
 		consumer.CreateSubreddit(context, actorMsg)
@@ -73,6 +73,25 @@ func (consumer *ConsumerActor) Login(context actor.Context, actorMsg *proto.Logi
 		fmt.Println("Error: ", err)
 	} else {
 		consumer.token = res.(*proto.LoginResponse).Token
+	}
+}
+
+func (consumer *ConsumerActor) Logout(context actor.Context, actorMsg *proto.LogoutRequest) {
+	authActor := cluster.GetCluster(context.ActorSystem()).Get("auth", "Auth")
+	future := context.RequestFuture(authActor, &proto.LogoutRequest{
+		Token: consumer.token,
+	}, 5*time.Second)
+	if res, err := future.Result(); err != nil {
+		fmt.Println("Error: ", err)
+	} else {
+		if logoutResponse, ok := res.(*proto.LogoutResponse); ok {
+			if logoutResponse.Error != "" {
+				fmt.Println("Error: ", logoutResponse.Error)
+				return
+			}
+		} else {
+			fmt.Println("Logged out")
+		}
 	}
 }
 

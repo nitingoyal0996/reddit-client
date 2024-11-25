@@ -68,3 +68,11 @@ message CreatePostRequest {
 message CreatePostResponse {
     string error = 1;
 }
+
+message LogoutRequest {
+    string token = 1;
+}
+
+message LogoutResponse {
+    string error = 1;
+}

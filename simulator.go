@@ -150,3 +150,49 @@ func (context *SimulatorContext) CreateOnePost(subredditId int, consumerIdx int)
 	}
 	println("Post created with ID: ", context.redditIDs[len(context.redditIDs)-1])
 }
+
+// GenerateUniqueRandomNumbers generates a shuffled list of numbers in the range [min, max].
+func GenerateUniqueRandomNumbers(min, max int) ([]int, error) {
+	if min > max {
+		return nil, fmt.Errorf("invalid range: min (%d) > max (%d)", min, max)
+	}
+
+	// Create a slice with numbers from min to max
+	numbers := make([]int, max-min+1)
+	for i := range numbers {
+		numbers[i] = min + i
+	}
+
+	// Shuffle the numbers
+	rand.Seed(uint64(time.Now().UnixNano()))
+	rand.Shuffle(len(numbers), func(i, j int) { numbers[i], numbers[j] = numbers[j], numbers[i] })
+
+	return numbers, nil
+}
+
+
+func (context *SimulatorContext) LiveConnectDisconnect(simulationDuration time.Duration) {
+
+	indices, err := GenerateUniqueRandomNumbers(0, len(context.consumers)-1)
+	println("Indices: ", indices)
+	// iterate over indices
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+	for _, idx := range indices {
+		startTime := time.Now()
+		for time.Since(startTime) < simulationDuration {
+			// Simulate login
+			context.system.Root.Send(context.consumers[idx], &proto.LoginRequest{
+				Username: fmt.Sprintf("user_%d", idx),
+				Password: fmt.Sprintf("password_%d", idx),
+			})
+			onlineTime := time.Duration(rand.Intn(4)+1) * time.Second 
+			time.Sleep(onlineTime)
+			// Simulate logout
+			context.system.Root.Send(context.consumers[idx], &proto.LogoutRequest{})
+			offlineTime := time.Duration(rand.Intn(4)+1) * time.Second
+			time.Sleep(offlineTime)
+		}
+	}
+}

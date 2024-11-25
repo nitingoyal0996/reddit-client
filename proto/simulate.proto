@@ -28,7 +28,5 @@ message Leave {
     string subreddit_id = 2;
 }
 
-message Logout {}
-
 message Test {
 }

@@ -31,9 +31,12 @@ func main() {
 	// time.Sleep(2 * time.Second)	
 	// println("Scenario 1 - Many users")
 	// SimulateUserCreation(system, 1000)
+	// time.Sleep(2 * time.Second)
+	// println("Scenario 2 - Many subreddits with zipf user distribution")
+	// SimulateZipfDistribution(system, 2, 10)
 	time.Sleep(2 * time.Second)
-	println("Scenario 2 - Many subreddits with zipf user distribution")
-	SimulateZipfDistribution(system, 2, 10)
+	println("Scenario 3 - Connection and disconnection")
+	SimulateConnectionAndDisconnection(system, 5 * time.Second, 10)
 
 	finish := make(chan os.Signal, 1)
 	signal.Notify(finish, os.Interrupt, os.Kill)
@@ -66,11 +69,9 @@ func SimulateZipfDistribution(system *actor.ActorSystem, subCount int, userCount
 	time.Sleep(1 * time.Second)
 }
 
-// // Scenario 3 - Connection and disconnection
-// func SimulateConnectionAndDisconnection(system *actor.ActorSystem, userCount int) {
-// 	Simulator := NewSimulatorContext(system)
-// 	Simulator.RegisterUsers(0, userCount)
-// 	// over a period of time, simulate users being connected and disconnected
-
-	
-// }
+// Scenario 3 - Connection and disconnection
+func SimulateConnectionAndDisconnection(system *actor.ActorSystem, simulationDuration time.Duration, userCount int) {
+	Simulator := NewSimulatorContext(system)
+	Simulator.RegisterUsers(0, userCount)
+	Simulator.LiveConnectDisconnect(simulationDuration)
+}

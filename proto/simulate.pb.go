@@ -277,42 +277,6 @@ func (x *Leave) GetSubredditId() string {
 	return ""
 }
 
-type Logout struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *Logout) Reset() {
-	*x = Logout{}
-	mi := &file_proto_simulate_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Logout) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Logout) ProtoMessage() {}
-
-func (x *Logout) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_simulate_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Logout.ProtoReflect.Descriptor instead.
-func (*Logout) Descriptor() ([]byte, []int) {
-	return file_proto_simulate_proto_rawDescGZIP(), []int{5}
-}
-
 type Test struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -321,7 +285,7 @@ type Test struct {
 
 func (x *Test) Reset() {
 	*x = Test{}
-	mi := &file_proto_simulate_proto_msgTypes[6]
+	mi := &file_proto_simulate_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -333,7 +297,7 @@ func (x *Test) String() string {
 func (*Test) ProtoMessage() {}
 
 func (x *Test) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_simulate_proto_msgTypes[6]
+	mi := &file_proto_simulate_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,7 +310,7 @@ func (x *Test) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Test.ProtoReflect.Descriptor instead.
 func (*Test) Descriptor() ([]byte, []int) {
-	return file_proto_simulate_proto_rawDescGZIP(), []int{6}
+	return file_proto_simulate_proto_rawDescGZIP(), []int{5}
 }
 
 var File_proto_simulate_proto protoreflect.FileDescriptor
@@ -372,12 +336,11 @@ var file_proto_simulate_proto_rawDesc = []byte{
 	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x75, 0x62, 0x72, 0x65, 0x64, 0x64, 0x69, 0x74,
 	0x49, 0x64, 0x22, 0x2a, 0x0a, 0x05, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x73,
 	0x75, 0x62, 0x72, 0x65, 0x64, 0x64, 0x69, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0b, 0x73, 0x75, 0x62, 0x72, 0x65, 0x64, 0x64, 0x69, 0x74, 0x49, 0x64, 0x22, 0x08,
-	0x0a, 0x06, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x22, 0x06, 0x0a, 0x04, 0x54, 0x65, 0x73, 0x74,
-	0x42, 0x2e, 0x5a, 0x2c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e,
-	0x69, 0x74, 0x69, 0x6e, 0x67, 0x6f, 0x79, 0x61, 0x6c, 0x30, 0x39, 0x39, 0x36, 0x2f, 0x72, 0x65,
-	0x64, 0x64, 0x69, 0x74, 0x2d, 0x63, 0x6c, 0x6f, 0x6e, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x09, 0x52, 0x0b, 0x73, 0x75, 0x62, 0x72, 0x65, 0x64, 0x64, 0x69, 0x74, 0x49, 0x64, 0x22, 0x06,
+	0x0a, 0x04, 0x54, 0x65, 0x73, 0x74, 0x42, 0x2e, 0x5a, 0x2c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6e, 0x69, 0x74, 0x69, 0x6e, 0x67, 0x6f, 0x79, 0x61, 0x6c, 0x30,
+	0x39, 0x39, 0x36, 0x2f, 0x72, 0x65, 0x64, 0x64, 0x69, 0x74, 0x2d, 0x63, 0x6c, 0x6f, 0x6e, 0x65,
+	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -392,15 +355,14 @@ func file_proto_simulate_proto_rawDescGZIP() []byte {
 	return file_proto_simulate_proto_rawDescData
 }
 
-var file_proto_simulate_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_simulate_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_simulate_proto_goTypes = []any{
 	(*Login)(nil),     // 0: proto.Login
 	(*Subreddit)(nil), // 1: proto.Subreddit
 	(*Post)(nil),      // 2: proto.Post
 	(*Join)(nil),      // 3: proto.Join
 	(*Leave)(nil),     // 4: proto.Leave
-	(*Logout)(nil),    // 5: proto.Logout
-	(*Test)(nil),      // 6: proto.Test
+	(*Test)(nil),      // 5: proto.Test
 }
 var file_proto_simulate_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -421,7 +383,7 @@ func file_proto_simulate_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_simulate_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
